@@ -1,7 +1,0 @@
-# iFixit Manual Downloader & Data Schema
-
-- [ ] Research iFixit API <!-- id: 0 -->
-- [ ] Design Data Schema for LLM Training <!-- id: 1 -->
-- [ ] Design API Client for Downloading Manuals <!-- id: 2 -->
-- [ ] Implement Prototype Script <!-- id: 3 -->
-- [ ] Create Walkthrough <!-- id: 4 -->
