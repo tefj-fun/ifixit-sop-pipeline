@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # iFixit SOP Pipeline & Training Toolkit
 
 A complete pipeline for automating **Standard Operating Procedures (SOPs)** using Large Language Models (LLMs) and Computer Vision. This toolkit downloads data from iFixit, trains specialized agents, and runs a runtime verification system.
@@ -64,6 +63,3 @@ graph TD
 
 ## 📄 License
 This project is for educational purposes. iFixit content is licensed under CC-BY-NC-SA 3.0.
-=======
-# ifixit-sop-pipeline
->>>>>>> 3d98fde93ad7d655de789c4cbf5db213813bcecb
