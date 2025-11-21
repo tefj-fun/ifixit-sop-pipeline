@@ -1,0 +1,51 @@
+# SOP Pipeline & iFixit Downloader Walkthrough
+
+## Overview
+This walkthrough documents the design and implementation of the **SOP (Standard Operating Procedure) Pipeline**. The system is designed to automate the creation of SOPs from manuals, assist human annotation, and verify steps at runtime using computer vision.
+
+## 1. Pipeline Architecture
+The system consists of three main agents:
+1.  **SOP Agent (LLM)**: Parses raw manual text into structured JSON (Steps, Logic, Classes).
+2.  **Annotation Copilot (VLM)**: Pre-annotates images using a SOTA Vision Model (Grounding DINO, SAM 2) trained on iFixit data.
+3.  **Logic Agent**: Verifies steps at runtime based on vision telemetry.
+
+## 2. Data Schema
+The core of the system is the structured JSON schema, which captures:
+-   **Steps**: Sequential instructions.
+-   **Logic**: Conditions for completion (e.g., "4 screws removed").
+-   **Classes**: Objects to detect (e.g., "Phillips #00 Screw").
+-   **Weak Labels**: Bullet colors in text mapping to image markers.
+
+## 3. iFixit Downloader (`ifixit_downloader.py`)
+We implemented a robust downloader to fuel the training of these agents.
+
+### Features
+-   **Search & Fetch**: Automatically searches for guides by keyword (e.g., "MacBook", "Washer").
+-   **Schema Transformation**: Converts raw iFixit API responses into our training-ready JSONL format.
+-   **Polite Crawling**: Includes delays to respect API rate limits.
+
+### Usage
+```bash
+python ifixit_downloader.py
+```
+*   **Output**: `data/ifixit_dataset.jsonl`
+*   **Content**: A JSONL file where each line is a complete guide with structured steps and image metadata.
+
+### Verification Results
+We successfully downloaded a test dataset of 30 guides across diverse categories:
+-   **Electronics**: MacBook, iPhone
+-   **Appliances**: Washing Machine, Dryer, Toaster, Vacuum
+
+**Sample Output (JSONL Snippet):**
+```json
+{
+  "id": 113413,
+  "title": "\"Jump-Starting\" a Dead MacBook Battery...",
+  "category": "MacBook Unibody Model A1342",
+  "steps": [...]
+}
+```
+
+## Next Steps
+1.  **Train SOP Agent**: Use the text -> JSON pairs from the dataset to fine-tune an LLM.
+2.  **Train Vision Model**: Use the images and weak labels to pre-train Grounding DINO/SAM 2.

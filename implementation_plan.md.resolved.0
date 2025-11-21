@@ -1,0 +1,71 @@
+# iFixit Manual Downloader & Data Schema Design
+
+## Goal Description
+Design and implement a Python API client to download repair manuals from iFixit and structure the data in a schema suitable for training or fine-tuning Large Language Models (LLMs). The goal is to capture the instructional content (steps, text, tools) while discarding unnecessary UI elements.
+
+## User Review Required
+> [!IMPORTANT]
+> The iFixit API is public but rate-limited. The client should implement polite crawling (delays) to avoid being blocked.
+
+## Data Schema for LLM Training
+The proposed schema is a JSON Lines (JSONL) format where each line represents a single manual. This format is efficient for streaming and processing large datasets.
+
+### Schema Structure
+```json
+{
+  "id": 12345,
+  "title": "MacBook Pro 13-Inch Unibody Mid 2012 Battery Replacement",
+  "url": "https://www.ifixit.com/Guide/MacBook+Pro+13-Inch+Unibody+Mid+2012+Battery+Replacement/1347",
+  "category": "MacBook Pro 13\" Unibody Mid 2012",
+  "difficulty": "Moderate",
+  "time_required": "15 - 45 minutes",
+  "tools": [
+    {"name": "Phillips #00 Screwdriver", "url": "..."},
+    {"name": "Tri-point Y0 Screwdriver", "url": "..."}
+  ],
+  "parts": [
+    {"name": "MacBook Pro 13\" Unibody (Mid 2009-Mid 2012) Battery", "url": "..."}
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "title": "Remove the lower case screws",
+      "text": "Remove the following ten screws securing the lower case to the upper case:\n* Three 3 mm Phillips #00 screws.\n* Three 13.5 mm Phillips #00 screws.\n* Four 3 mm Phillips #00 screws.",
+      "images": ["https://.../image1.jpg"]
+    },
+    {
+      "order": 2,
+      "title": "Lift the lower case",
+      "text": "Gently lift the lower case away from the upper case...",
+      "images": ["https://.../image2.jpg"]
+    }
+  ]
+}
+```
+
+## Proposed Changes
+
+### [NEW] `ifixit_client.py`
+A Python module to interact with the iFixit API.
+- `IFixitClient` class:
+    - `__init__(self)`
+    - `search_guides(self, query, limit=10)`: Search for guides.
+    - `get_guide(self, guide_id)`: Fetch full guide details.
+    - `get_categories(self)`: Fetch category hierarchy.
+    - `download_manual(self, guide_id)`: Fetch and process a guide into the target schema.
+
+### [NEW] `download_manuals.py`
+A script to demonstrate usage:
+- Accepts a search query or category.
+- Downloads matching manuals.
+- Saves them to a `data/` directory in JSONL format.
+
+## Verification Plan
+
+### Automated Tests
+- **Unit Tests**: Test `IFixitClient` methods with mocked API responses.
+- **Integration Test**: Run the script to download a single known guide (e.g., guide ID 13470) and verify the output JSON structure matches the schema.
+
+### Manual Verification
+- Run the script with a query (e.g., "MacBook Battery").
+- Inspect the generated JSONL file to ensure content is readable and structured correctly.
